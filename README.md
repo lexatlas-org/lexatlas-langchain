@@ -2,7 +2,9 @@
 
 With the main version built using the Azure AI Agent SDK and the semantic kernel, we developed a prototype with **LangChain**. This allowed us to evaluate differences in orchestration, agent chaining behavior, and immediate effectiveness across frameworks, providing valuable insights into performance and modularity trade-offs.
 
+
 ---
+
 
 ## 🚀 Deployment
 
@@ -26,9 +28,9 @@ The multi-agent **LexAtlas** LangChain version has the following structure:
 6. **graph_generator Agent**: generates charts only if prompted by `prompt` or `researcher`.
 
 
-
-
 ---
+
+
 ## 🛠️ Frameworks, Libraries, and Tools
 
 | Category                  | Tool/Library                                                    |
