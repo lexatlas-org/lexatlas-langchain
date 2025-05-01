@@ -4,21 +4,13 @@ With the main version built using the Azure AI Agent SDK and the semantic kernel
 
 ---
 
-## 🛠️ Frameworks, Libraries, and Tools
+## 🚀 Deployment
 
-| Category                  | Tool/Library                                                    |
-|---------------------------|------------------------------------------------------------------|
-| Document Processing        | `langchain_community.document_loaders.PyPDFLoader`              |
-| LLMs and Embeddings        | `AzureChatOpenAI`, `AzureOpenAIEmbeddings`                      |
-| Vector Store               | `FAISS` (via LangChain)                                         |
-| State Graph                | `LangGraph`                                                     |
-| Embeddings                 | `text-embedding-3-large` (Azure OpenAI)                         |
-| Web Retrieval              | `TavilySearchResults`                                           |
-| Optional Visualization     | `matplotlib`, `PythonREPL`                                     |
-| Utilities                  | `dotenv`, `os`, `shutil`, `uuid`                                |
-| Deployment                 | `gradio                                                         |
+**(Attach interface image)**
+
 
 ---
+
 
 ## 🧠 Graph
 
@@ -33,8 +25,20 @@ The multi-agent **LexAtlas** LangChain version has the following structure:
 5. **Researcher Agent**: if the selected option is "other", it performs a web search and returns output. It will only generate a chart using the `graph_generator` node if prompted.
 6. **graph_generator Agent**: generates charts only if prompted by `prompt` or `researcher`.
 
+
+
+
 ---
+## 🛠️ Frameworks, Libraries, and Tools
 
-## 🚀 Deployment
-
-**(Attach interface image)**
+| Category                  | Tool/Library                                                    |
+|---------------------------|------------------------------------------------------------------|
+| Document Processing        | `langchain_community.document_loaders.PyPDFLoader`              |
+| LLMs and Embeddings        | `AzureChatOpenAI`, `AzureOpenAIEmbeddings`                      |
+| Vector Store               | `FAISS` (via LangChain)                                         |
+| State Graph                | `LangGraph`                                                     |
+| Embeddings                 | `text-embedding-3-large` (Azure OpenAI)                         |
+| Web Retrieval              | `TavilySearchResults`                                           |
+| Optional Visualization     | `matplotlib`, `PythonREPL`                                     |
+| Utilities                  | `dotenv`, `os`, `shutil`, `uuid`                                |
+| Deployment                 | `gradio                                                         |
