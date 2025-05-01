@@ -45,3 +45,13 @@ The multi-agent **LexAtlas** LangChain version has the following structure:
 | Optional Visualization     | `matplotlib`, `PythonREPL`                                     |
 | Utilities                  | `dotenv`, `os`, `shutil`, `uuid`                                |
 | Deployment                 | `gradio                                                         |
+
+
+## Executable
+
+Executable  with gradio:
+
+Input: message and voice
+Output: voice message
+
+https://318522511d26749366.gradio.live/
