@@ -6,7 +6,7 @@ With the main version built using the Azure AI Agent SDK and the semantic kernel
 ---
 
 
-## 🚀 Deployment - Demostration
+## 🚀 Deployment - Demostration (watch video)
 [![wath_video](graph/deployment.png)](graph/video_lexatlas_lg.mp4)
 
 
