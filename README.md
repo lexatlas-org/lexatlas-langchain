@@ -6,8 +6,8 @@ With the main version built using the Azure AI Agent SDK and the semantic kernel
 ---
 
 
-## 🚀 Deployment
-![deployment](graph/deployment.png)
+## 🚀 Deployment - Demostration
+[![wath_video](graph/deployment.png)](graph/video_lexatlas_lg.mp4)
 
 
 ---
@@ -45,6 +45,5 @@ The multi-agent **LexAtlas** LangChain version has the following structure:
 | Deployment                 | `gradio                                                         |
 
 
-## Demostration
 
 
