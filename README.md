@@ -9,8 +9,6 @@ With the main version built using the Azure AI Agent SDK and the semantic kernel
 ## 🚀 Deployment
 ![deployment](graph/deployment.png)
 
-**(Attach interface image)**
-
 
 ---
 
