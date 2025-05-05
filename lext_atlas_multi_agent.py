@@ -1,50 +1,9 @@
 # =========================================
-# DATA PROCESSING - FILE ORGANIZER
-# =========================================
-
-"""
-from langchain_community.document_loaders import PyPDFLoader
-# state
-def classify_by_state(text: str) -> str:
-    estados = ["New York", "Florida", "California"]
-    for e in estados:
-        if e.lower() in text.lower():
-            return e
-    return "Unknown"
-
-
-# read all pdf docuemnts and detect whish US state
-# reciebe 2 rutas: input = recibe sin clasifica, output: se crea subcarpetas po estado
-def classify_documents(input_folder: str, output_folder: str):
-    for file in os.listdir(input_folder):  # recorre archivos dentro de carpeta
-        if file.endswith(".pdf"):
-            file_path = os.path.join(input_folder, file)
-            # PyPDFloader
-            loader = PyPDFLoader(file_path)
-            docs = loader.load()  # carga documento
-            # extraer texto principal del primer documento
-            if len(docs) > 0:
-                text = " ".join([doc.page_content for doc in docs])
-
-            # LLAMAR FUNCION EXTERNA
-            estado = classify_by_state(text)
-            dest_folder = os.path.join(
-                output_folder, estado
-            )  # crear la ruta de destino
-            os.makedirs(dest_folder, exist_ok=True)  # si ya existe no la crea
-            shutil.move(os.path.join(input_folder, file), dest_folder)
-"""
-
-
-# input_folder = r"C:\Users\grupo\OneDrive\Escritorio\HACKATHON\data_insurance"
-# output_folder = r"C:\Users\grupo\OneDrive\Escritorio\HACKATHON\data_insurance\classified_data"
-# sample_docs = classify_documents(input_folder, output_folder)
-
-# =========================================
 # IMPORT DATA
 # =========================================
 # Direction
 import os
+from langchain_community.document_loaders import PyPDFLoader
 
 
 def get_all_pdf(folder_path):
@@ -80,7 +39,6 @@ def load_documents_from_pdf(pdf_paths) -> list:
 
 documents = load_documents_from_pdf(pdf_file)  # <----------------------
 
-# ============================================================================================================================================
 
 # =========================================
 # MODELS AZURE + EMBEDDINGS
@@ -300,12 +258,18 @@ def retrieve_rag(state: GraphState) -> GraphState:  # quick search
 
 
 # 2. Tool Search
-search = TavilySearchResults()
+search = TavilySearchResults(max_results=2)
 # 3. Tool coder
 repl = PythonREPL()
-save_chart = r"C:\Users\grupo\OneDrive\Escritorio\HACKATHON\test_chart"
+# save_chart = r"C:\Users\grupo\OneDrive\Escritorio\HACKATHON\test_chart"
+# temporal gradio
+import tempfile
 
+# save_chart = tempfile.gettempdir()
+save_chart = r"C:\Users\grupo\OneDrive\Escritorio\HACKATHON\static\charts"
+os.makedirs(save_chart, exist_ok=True)
 
+path_radio = []
 @tool
 def python_repl_tool(code: Annotated[str, "The python code"]):
     """Dynamically executes Python code and returns the result or an error message."""
@@ -326,11 +290,10 @@ def python_repl_tool(code: Annotated[str, "The python code"]):
     result_str = f"Successfully executed:\n```python\n{code}\n```\nStdout:\n{result}"
     # if "plt.savefig" in code:
     # result_str += f"\n✅ Chart saved to: `{full_path}`"
-    if image_path:
-        result_str += f"\n✅ Chart saved to: `{image_path}`"
-
+    route = f"static/charts/{os.path.basename(image_path)}" if image_path else None
+    path_radio.append(image_path)
     # return result_str + "\nIf you have completed all tasks, respond with FINAL ANSWER"
-    return {"text": result_str, "image": image_path}
+    return {"text": result_str, "route": route}
 
 
 # =========================================
@@ -476,15 +439,18 @@ graph.add_edge("chart_generator", "__end__")
 app = graph.compile()
 
 """
+
 # test
 test = {
-    "query": "Give me a summary table on the regularizations of washigtong",
-    "states": "Other",
+    "query": "Generates a bar chart with the count of each type of transaction sent by the insurer (e.g. 10, 20, 30, 31, etc.) in a given period",
+    "states": "California",
     "messages": [],
 }
 question_test = app.invoke(test)
-print(question_test["messages"][-1].content)
+rpta = question_test["messages"][-1].content
+print("RUTA IMAGEN:\n", path_radio)
 """
+
 
 # path = r"C:\Users\grupo\OneDrive\Escritorio\HACKATHON\graph\mermaid_graph.png"
 """
@@ -501,6 +467,8 @@ with open(path, "wb") as f:
 print("saved image'")
 """
 
+
+
 # =====================================================================================================================================
 
 # =========================================
@@ -513,10 +481,11 @@ from gradio.themes.base import Base
 import whisper
 import uuid
 
+
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # Load Whisper model
-whisper_model = whisper.load_model("base")
+whisper_model = whisper.load_model("tiny")
 
 
 # Main chatbot function
@@ -544,19 +513,15 @@ def run_chatbot_with_audio(state, query, audio_path):
 
         # Handle both plain text and dict output (text + optional image)
         final_message = result["messages"][-1].content
-        if isinstance(final_message, dict):
-            reply = final_message.get("text", "")
-            image_path = final_message.get("image", None)
-        else:
-            reply = final_message
-            image_path = None
+        image_path = path_radio[0]
+        
 
         # Convert reply to speech using gTTS
-        tts = gTTS(reply)
+        tts = gTTS(final_message)
         tts_file = os.path.join(tempfile.gettempdir(), f"{uuid.uuid4()}.mp3")
         tts.save(tts_file)
 
-        return f'🗣️ You said: "{query_text}"\n🤖 Chatbot: {reply}', tts_file, image_path
+        return f'🗣️ You said: "{query_text}"\n🤖 Chatbot: {final_message}', tts_file, image_path
 
     except Exception as e:
         return f"⚠️ An error occurred: {str(e)}", None, None
@@ -565,10 +530,10 @@ def run_chatbot_with_audio(state, query, audio_path):
 # UI with Gradio
 with gr.Blocks(theme=gr.themes.Glass()) as demo:
     gr.Markdown(
-        """
-        <h1 style='text-align: center; font-size: 3em;'>🎙️ <strong>Multi Agent LexAtlas</strong></h1>
-        <p style='text-align: center;'>A specialized agent for retrieving state-level legal regulations on auto insurance using AI.</p>
-        """,
+    """
+    <h1 style='text-align: center; font-size: 3em;'>🎙️ <strong>Multi Agent LexAtlas</strong></h1>
+    <p style='text-align: center;'>A specialized agent for retrieving state-level legal regulations on auto insurance using AI.</p>
+    """,
         elem_id="title-centered",
     )
 
@@ -595,4 +560,4 @@ with gr.Blocks(theme=gr.themes.Glass()) as demo:
         outputs=[output_text, output_audio, output_image],
     )
 
-demo.launch(share=True)
+demo.launch()
